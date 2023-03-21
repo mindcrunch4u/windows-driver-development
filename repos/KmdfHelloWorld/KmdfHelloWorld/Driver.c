@@ -1,61 +1,49 @@
+/*ntddk.h contains definitions for the kernel (DRIVER_INITIALIZE, PUNICODE_STRING)*/
 #include <ntddk.h>
+/*wdf.h contains definitions for WDF driver functions (WDF_DRIVER_CONFIG, WDF_DRIVER_CONFIG_INIT, WdfDriverCreate)*/
 #include <wdf.h>
+
+/*DriverEntry, kmdfHelloWorldEvtDeviceAdd are callbacks*/
+/*What's written here are function declarations*/
 DRIVER_INITIALIZE DriverEntry;
-EVT_WDF_DRIVER_DEVICE_ADD KmdfHelloWorldEvtDeviceAdd;
+/*This will be called when a device is (physically) added*/
+EVT_WDF_DRIVER_DEVICE_ADD kmdfHelloWorldEvtDeviceAdd;
 
 NTSTATUS
+/*DriverEntry is the main() for Windows Drivers*/
 DriverEntry(
-    _In_ PDRIVER_OBJECT     DriverObject,
-    _In_ PUNICODE_STRING    RegistryPath
+	_In_ PDRIVER_OBJECT  DriverObject,
+	_In_ PUNICODE_STRING RegistryPath
 )
 {
-    // NTSTATUS variable to record success or failure
-    NTSTATUS status = STATUS_SUCCESS;
+	NTSTATUS status = STATUS_SUCCESS;
+	WDF_DRIVER_CONFIG config;
+	/* DPFLTR Display Filter */
+	/* IHV Independent Hardware Vendor */
+	/* IHV provides support for hardwares regardless(independent) of the manufacturer, as long as the standards are supported. */
+	KdPrintEx(( DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "KmdfHelloWorld: DriverEntry\n"));
 
-    // Allocate the driver configuration object
-    WDF_DRIVER_CONFIG config;
+	WDF_DRIVER_CONFIG_INIT(&config, kmdfHelloWorldEvtDeviceAdd);
 
-    // Print "Hello World" for DriverEntry
-    KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "KmdfHelloWorld: DriverEntry\n"));
+	/*The driver object is only created now, which is the parent for all other WDF(framework) objects.*/
+	/*All the actions above are just the initialization*/
+	status = WdfDriverCreate(DriverObject, RegistryPath, WDF_NO_OBJECT_ATTRIBUTES, &config, WDF_NO_HANDLE);
 
-    // Initialize the driver configuration object to register the
-    // entry point for the EvtDeviceAdd callback, KmdfHelloWorldEvtDeviceAdd
-    WDF_DRIVER_CONFIG_INIT(&config,
-        KmdfHelloWorldEvtDeviceAdd
-    );
-
-    // Finally, create the driver object
-    status = WdfDriverCreate(DriverObject,
-        RegistryPath,
-        WDF_NO_OBJECT_ATTRIBUTES,
-        &config,
-        WDF_NO_HANDLE
-    );
-    return status;
+	return status;
 }
 
-NTSTATUS
-KmdfHelloWorldEvtDeviceAdd(
-    _In_    WDFDRIVER       Driver,
-    _Inout_ PWDFDEVICE_INIT DeviceInit
+NTSTATUS kmdfHelloWorldEvtDeviceAdd(
+	_In_ WDFDRIVER Driver,
+	/*P(pointer to) WDF DEVICE INIT*/
+	_Inout_ PWDFDEVICE_INIT DeviceInit
 )
 {
-    // We're not using the driver object,
-    // so we need to mark it as unreferenced
-    UNREFERENCED_PARAMETER(Driver);
+	/*Because the code doesn't ever use this parameter, call UNREFERENCED_PARAMETER() to suppress warnings*/
+	UNREFERENCED_PARAMETER(Driver);
 
-    NTSTATUS status;
-
-    // Allocate the device object
-    WDFDEVICE hDevice;
-
-    // Print "Hello World"
-    KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "KmdfHelloWorld: KmdfHelloWorldEvtDeviceAdd\n"));
-
-    // Create the device object
-    status = WdfDeviceCreate(&DeviceInit,
-        WDF_NO_OBJECT_ATTRIBUTES,
-        &hDevice
-    );
-    return status;
+	NTSTATUS status;
+	WDFDEVICE hDevice;
+	KdPrintEx(( DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "KmdfHelloWorld: KmdfHelloWorldEvtDeviceAdd\n" ));
+	status = WdfDeviceCreate(&DeviceInit, WDF_NO_OBJECT_ATTRIBUTES, &hDevice);
+	return status;
 }
