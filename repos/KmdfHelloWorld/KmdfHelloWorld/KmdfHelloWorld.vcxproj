@@ -158,7 +158,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
     <Inf2CatVerbose>true</Inf2CatVerbose>
-    <Inf2CatNoCatalog>true</Inf2CatNoCatalog>
+    <Inf2CatNoCatalog>false</Inf2CatNoCatalog>
+    <TimeStampServer />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
