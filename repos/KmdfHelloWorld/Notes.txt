@@ -1,6 +1,10 @@
 
+Buzzwords:
 	host computer: the computer that builds the driver, which will then run the debugger
 	target computer, test computer: the computer that installs and runs the driver
 	deploy a driver: send the files to the target, without installation
+	provision a computer: prepare the computer for a specific task
 	
+Command:
+    C:\Program Files (x86)\Windows Kits\10\Tools\x64\devcon.exe
 	
